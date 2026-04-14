@@ -1,14 +1,15 @@
 # 核心依赖
 streamlit==1.36.0
-langchain==0.2.15
+langchain==0.2.17
 langchain-community==0.2.18
 langchain-openai==0.1.19
-langchain-postgres==0.1.0
+langchain-postgres==0.0.17
 
 # 数据库
 psycopg2-binary==2.9.9
 mysql-connector-python==8.4.0
 pymongo==4.7.3
+redis==5.0.1
 
 # 工具
 python-dotenv==1.0.0
@@ -21,7 +22,7 @@ PyPDF2==3.0.1
 python-docx==0.8.11
 
 # 向量存储
-pgvector==0.2.0
+pgvector==0.2.5
 
 # 网络
 fastapi==0.111.0

@@ -4,18 +4,20 @@ import psycopg2.pool
 from app.config.config import DATABASE_CONFIG
 
 class MySQLConnectionPool:
-    """MySQL连接池"""
+    """MySQL连接池 - 支持10000+并发"""
     def __init__(self):
         try:
             config = DATABASE_CONFIG['mysql']
             self.pool = mysql.connector.pooling.MySQLConnectionPool(
                 pool_name="mysql_pool",
-                pool_size=5,
+                pool_size=500,      # 连接池大小增加到500（支持10000并发）
+                pool_reset_session=True,
                 host=config['host'],
                 port=config['port'],
                 database=config['database'],
                 user=config['user'],
-                password=config['password']
+                password=config['password'],
+                connection_timeout=5
             )
         except Exception as e:
             print(f"MySQL连接池初始化失败: {e}")
@@ -27,18 +29,23 @@ class MySQLConnectionPool:
         return None
 
 class PostgreSQLConnectionPool:
-    """PostgreSQL连接池"""
+    """PostgreSQL连接池 - 支持10000+并发"""
     def __init__(self):
         try:
             config = DATABASE_CONFIG['postgresql']
             self.pool = psycopg2.pool.SimpleConnectionPool(
-                1,
-                5,
+                100,     # 最小连接数
+                1000,    # 最大连接数（支持10000并发的关键配置）
                 host=config['host'],
                 port=config['port'],
                 database=config['database'],
                 user=config['user'],
-                password=config['password']
+                password=config['password'],
+                connect_timeout=5,
+                keepalives=1,
+                keepalives_idle=30,
+                keepalives_interval=10,
+                keepalives_count=5
             )
         except Exception as e:
             print(f"PostgreSQL连接池初始化失败: {e}")

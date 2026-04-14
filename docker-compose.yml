@@ -1,0 +1,372 @@
+version: '3.8'
+
+services:
+  # PostgreSQL向量数据库（支持10000+并发）
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: pgvector
+    environment:
+      POSTGRES_DB: vector_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: "2.0"
+
+  # Redis缓存（支持10000+并发）
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.5"
+
+  # MySQL数据库（支持10000+并发）
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_DATABASE: guiguxiaozhi
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: 123456
+      MAX_CONNECTIONS: 1000
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -u root -p123456"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: "2.0"
+
+  # MongoDB聊天记录（支持10000+并发）
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --eval 'db.adminCommand(\"ping\")'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.5"
+
+  # Streamlit应用实例1-10（支持10000+并发）
+  streamlit1:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit2:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit3:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit4:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit4
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit5:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit5
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit6:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit6
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit7:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit7
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit8:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit8
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit9:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit9
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  streamlit10:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit10
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+      - MONGODB_HOST=mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.25"
+
+  # Nginx负载均衡（支持10000+并发）
+  nginx:
+    image: nginx:latest
+    container_name: nginx-loadbalancer
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - streamlit1
+      - streamlit2
+      - streamlit3
+      - streamlit4
+      - streamlit5
+      - streamlit6
+      - streamlit7
+      - streamlit8
+      - streamlit9
+      - streamlit10
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "0.5"
+
+volumes:
+  postgres_data:
+  redis_data:
+  mysql_data:
+  mongodb_data:

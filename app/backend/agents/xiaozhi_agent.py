@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_core.tools import Tool
 from app.config.config import API_CONFIG, SYSTEM_CONFIG
 from app.backend.services.appointment_service import AppointmentService
-from app.rag.rag_service import RAGService
+from app.rag.rag_service_optimized import OptimizedRAGService
 from app.backend.services.chat_memory_service import ChatMemoryService
 import datetime
 
@@ -11,9 +11,10 @@ class XiaozhiAgent:
     def __init__(self):
         self.llm = self._init_llm()
         self.appointment_service = AppointmentService()
-        self.rag_service = RAGService()
+        self.rag_service = OptimizedRAGService()
         self.chat_memory_service = ChatMemoryService()
         self.tools = self._init_tools()
+        self.last_sources = []  # 存储最后一次检索的来源信息，用于答案溯源
     
     def _init_llm(self):
         """初始化大模型"""
@@ -70,8 +71,13 @@ class XiaozhiAgent:
     
     def retrieve_knowledge(self, query):
         """检索知识库"""
-        context = self.rag_service.get_context(query)
-        return context if context else "未找到相关信息"
+        context_info = self.rag_service.get_context_with_sources(query)
+        self.last_sources = context_info.get('sources', [])
+        return context_info.get('context', '') if context_info.get('context') else "未找到相关信息"
+    
+    def get_last_sources(self):
+        """获取最后一次检索的来源信息（用于答案溯源）"""
+        return self.last_sources
     
     def get_system_prompt(self):
         """获取系统提示词"""
@@ -87,8 +93,10 @@ class XiaozhiAgent:
         # 获取对话历史
         history = self.chat_memory_service.get_messages(memory_id)
         
-        # 检索知识库，获取相关上下文
-        knowledge_context = self.rag_service.get_context(user_message)
+        # 检索知识库，获取相关上下文和来源信息
+        context_info = self.rag_service.get_context_with_sources(user_message)
+        knowledge_context = context_info.get('context', '')
+        self.last_sources = context_info.get('sources', [])
         
         # 构建系统提示词，包含知识库上下文
         system_prompt = self.get_system_prompt()
@@ -124,8 +132,10 @@ class XiaozhiAgent:
         # 获取对话历史
         history = self.chat_memory_service.get_messages(memory_id)
         
-        # 检索知识库，获取相关上下文
-        knowledge_context = self.rag_service.get_context(user_message)
+        # 检索知识库，获取相关上下文和来源信息
+        context_info = self.rag_service.get_context_with_sources(user_message)
+        knowledge_context = context_info.get('context', '')
+        self.last_sources = context_info.get('sources', [])
         
         # 构建系统提示词，包含知识库上下文
         system_prompt = self.get_system_prompt()

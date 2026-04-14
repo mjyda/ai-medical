@@ -18,27 +18,38 @@ API_CONFIG = {
     }
 }
 
-# 数据库配置
+# 数据库配置（优先从环境变量读取，支持Docker容器环境）
 DATABASE_CONFIG = {
     "mysql": {
-        "host": "localhost",
-        "port": 3306,
-        "database": "guiguxiaozhi",
-        "user": "root",
-        "password": "123456"
+        "host": os.getenv("MYSQL_HOST", "localhost"),
+        "port": int(os.getenv("MYSQL_PORT", "3306")),
+        "database": os.getenv("MYSQL_DATABASE", "guiguxiaozhi"),
+        "user": os.getenv("MYSQL_USER", "root"),
+        "password": os.getenv("MYSQL_PASSWORD", "123456")
     },
     "mongodb": {
-        "host": "localhost",
-        "port": 27017,
-        "database": "chat_memory_db"
+        "host": os.getenv("MONGODB_HOST", "localhost"),
+        "port": int(os.getenv("MONGODB_PORT", "27017")),
+        "database": os.getenv("MONGODB_DATABASE", "chat_memory_db")
     },
     "postgresql": {
-        "host": "localhost",
-        "port": 5433,
-        "database": "vector_db",
-        "user": "postgres",
-        "password": "password"
+        "host": os.getenv("POSTGRESQL_HOST", "localhost"),
+        "port": int(os.getenv("POSTGRESQL_PORT", "5433")),
+        "database": os.getenv("POSTGRESQL_DATABASE", "vector_db"),
+        "user": os.getenv("POSTGRESQL_USER", "postgres"),
+        "password": os.getenv("POSTGRESQL_PASSWORD", "password")
     }
+}
+
+# 缓存配置（优先从环境变量读取，支持Docker容器环境）
+CACHE_CONFIG = {
+    "redis": {
+        "host": os.getenv("REDIS_HOST", "localhost"),
+        "port": int(os.getenv("REDIS_PORT", "6379")),
+        "db": int(os.getenv("REDIS_DB", "0"))
+    },
+    "embedding_ttl": 3600 * 24 * 7,  # 嵌入向量缓存7天
+    "query_ttl": 3600  # 查询结果缓存1小时
 }
 
 # 系统配置
@@ -51,5 +62,10 @@ SYSTEM_CONFIG = {
     "chat": {
         "max_history": 20,
         "temperature": 0.7
+    },
+    "concurrency": {
+        "max_workers": 10,
+        "batch_size": 50,
+        "async_timeout": 60
     }
 }
