@@ -4,7 +4,7 @@ import os
 # 添加项目根目录到Python路径
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from app.backend.agents.xiaozhi_agent import XiaozhiAgent
+from app.backend.agents.medical_chat_agent import MedicalChatAgent
 from app.rag.rag_service import RAGService
 
 
@@ -22,7 +22,7 @@ def initialize_app():
         print(f"加载文档时出错: {e}")
     
     # 初始化AI代理
-    agent = XiaozhiAgent()
+    agent = MedicalChatAgent()
     print("AI代理初始化完成")
     
     return agent
@@ -31,7 +31,7 @@ def initialize_app():
 def start_streamlit():
     """启动Streamlit应用"""
     print("启动Streamlit前端...")
-    os.system("streamlit run app/frontend/app.py")
+    os.system("streamlit run app/frontend/streamlit_app.py")
 
 
 if __name__ == "__main__":

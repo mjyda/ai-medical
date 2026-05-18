@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "Intelligent knowledge base & multimedia AI platform",
+    "subtitle": "Mock data phase · See tech_stack_spec.md"
+  },
+  "nav": {
+    "dashboard": "Home",
+    "documents": "Documents",
+    "videos": "Videos",
+    "chat": "Q&A",
+    "generate": "Generate",
+    "tasks": "Tasks",
+    "graph": "Knowledge graph",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": "Sign in",
+    "register": "Sign up",
+    "logout": "Sign out",
+    "username": "Username",
+    "password": "Password",
+    "skipDev": "Skip sign-in (dev)"
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English"
+  }
+}

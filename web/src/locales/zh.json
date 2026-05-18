@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "智能知识库与多媒体 AI 平台",
+    "subtitle": "Mock 数据阶段 · 技术栈见 Spec-coding/jishuzhan/tech_stack_spec.md"
+  },
+  "nav": {
+    "dashboard": "首页",
+    "documents": "文档库",
+    "videos": "视频库",
+    "chat": "智能问答",
+    "generate": "内容生成",
+    "tasks": "任务中心",
+    "graph": "知识图谱",
+    "settings": "个人中心"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "username": "用户名",
+    "password": "密码",
+    "skipDev": "跳过登录（开发）"
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English"
+  }
+}

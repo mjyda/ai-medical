@@ -6,7 +6,7 @@
 
 ## 技术栈
 
-- **前端**：Streamlit 1.36.0
+- **前端**：Streamlit 1.36.0（内部演示）；产品 UI 见 `web/`（React + Vite + Tailwind + shadcn 风格组件，见 `Spec-coding/jishuzhan/tech_stack_spec.md`）
 - **后端**：Python 3.8+
 - **AI框架**：LangChain 0.2.15
 - **大模型**：本地部署的 qwen3-coder-30b
@@ -29,22 +29,29 @@
 ```
 python-ai-medical/
 ├── app/
-│   ├── backend/           # 后端核心功能
-│   │   ├── agents/        # AI代理
-│   │   ├── tools/         # 工具函数
-│   │   ├── services/      # 业务服务
-│   │   ├── models/        # 数据模型
-│   │   └── utils/         # 工具类
-│   ├── frontend/          # 前端界面
-│   ├── config/            # 配置文件
-│   ├── data/              # 数据文件
-│   │   └── docs/          # 知识库文档
-│   ├── rag/               # RAG相关功能
-│   └── database/          # 数据库连接
-├── tests/                 # 测试文件
-├── main.py                # 主入口
-└── requirements.txt       # 依赖文件
+│   ├── backend/
+│   │   ├── agents/              # AI 代理（如 medical_chat_agent.py）
+│   │   └── services/            # 业务服务
+│   ├── frontend/                # Streamlit：streamlit_app.py、ui_theme.py、agent_factory.py、views/
+│   ├── config/
+│   ├── data/
+│   │   └── docs/                # 知识库 Markdown（ASCII 文件名，见下）
+│   ├── rag/                     # RAG（rag_service.py、optimized_rag_service.py）
+│   └── database/                # 连接与 mysql_init.sql
+├── scripts/                     # 维护脚本（初始化/重置知识库）
+├── tests/                       # 测试
+│   └── performance/             # 并发与性能压测脚本
+├── web/                         # React SPA（tech_stack_spec · Mock 阶段）
+│   ├── README.md
+│   ├── .env.example
+│   └── src/                     # 路由、页面、Zustand、i18n、mocks
+├── main.py
+└── requirements.txt
 ```
+
+`app/frontend/views/` 为 **st.Page 多页线稿骨架**（登录/注册、首页、文档库/详情、视频库/详情、智能问答、内容生成、任务中心、知识图谱、个人中心）。使用 `st.navigation` 后 Streamlit **不会**再自动读取 `pages/` 目录。登录为 **Mock**（任意用户名密码即可进入）。视频、任务队列、图谱、内容生成等无后端处为占位数据。线稿中的「底部全局导航」在 Streamlit 1.36 中无等价组件，已用 **左侧分组导航** 代替；页脚有简短说明。
+
+知识库 `app/data/docs/` 中文档文件名示例：`faq.md`、`company_profile.md`、`business_process.md`、`products_services.md`（正文可为中文）。
 
 ## 快速开始
 
@@ -76,13 +83,72 @@ pip install -r requirements.txt
 - 数据库连接信息
 - 模型配置
 
-### 5. 启动应用
+### 5. 启动应用（Streamlit 演示）
 
 ```bash
 python main.py
 ```
 
-应用将自动启动Streamlit服务器，访问 http://localhost:8501 即可使用。
+应用将自动启动 Streamlit（默认入口 `app/frontend/streamlit_app.py`），访问 http://localhost:8501 即可使用。也可手动执行：
+
+```bash
+streamlit run app/frontend/streamlit_app.py
+```
+
+如需使用旧版单文件优化界面（未与线稿多页合并）：
+
+```bash
+streamlit run app/frontend/streamlit_app_lcp.py
+```
+
+### 5b. 文档知识库 API（FastAPI）与 Celery Worker
+
+文档上传、解析、向量化、检索接口见规格 3.2。需已启动 PostgreSQL（pgvector）与 Redis。
+
+```bash
+# 终端 1：API（默认 http://127.0.0.1:8001）
+uvicorn app.backend.api.main:app --host 0.0.0.0 --port 8001
+
+# 终端 2：异步任务（与 compose 中 celery_worker 等价）
+celery -A app.workers.celery_app worker --loglevel=info
+```
+
+- 宿主机连接 Docker 中的 Postgres 时，端口映射为 **5434**（见 `docker-compose.yml`），请设置环境变量 `POSTGRESQL_PORT=5434`；在容器内连 `postgres` 服务时使用 **5432**。
+- 建表可执行 `scripts/migrations/001_kb_documents.sql`，或在首次请求 API 时由应用自动 `CREATE TABLE IF NOT EXISTS`。
+- Streamlit「文档库」通过环境变量 `DOC_API_BASE_URL`（与 `config.KNOWLEDGE_BASE_CONFIG['api_base_url']` 一致）调用上述 API。无 Worker 时设置 `KB_DOC_SYNC_INGEST=true` 可在进程内同步解析/向量化（便于开发调试）。
+- 使用本仓库 `docker compose up` 时，`docker-compose.yml` 已为 **streamlit** 服务设置 `DOC_API_BASE_URL=http://api:8001`，与 **api** 服务（内网 8001）对齐；宿主机访问文档 REST 请用 **http://localhost:8001**（已映射端口）。
+
+### 5c. Docker Compose（精简）
+
+```bash
+docker compose up -d --build
+```
+
+- **Streamlit（经 Nginx）**：http://localhost  
+- **文档知识库 API**：`http://localhost:8001`（路由见 `app/backend/api/routers/docs.py`，前缀为 `/docs/...`）。  
+- 数据库端口：Postgres **5434**、MySQL **3307**、Redis **6379**、Mongo **27017**。
+
+### 6. React 前端（推荐产品 UI，Mock 数据）
+
+需 Node.js 18+ 与 npm。在 `python-ai-medical/web/` 下：
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+浏览器访问 **http://localhost:5173**。技术栈见 `Spec-coding/jishuzhan/tech_stack_spec.md` 与 `web/README.md`。  
+与 Streamlit（端口 8501）可同时存在；后续接入 FastAPI 时，将 `web` 中 `src/lib/api.ts` 对接到真实 `/api` 即可。
+
+### 7. 知识库维护脚本（可选）
+
+在项目根目录 `python-ai-medical/` 下执行：
+
+```bash
+python scripts/init_knowledge_base.py
+python scripts/reset_knowledge_base.py
+```
 
 ## 核心功能使用
 

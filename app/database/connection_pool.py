@@ -1,3 +1,5 @@
+import os
+
 import mysql.connector.pooling
 from pymongo import MongoClient
 import psycopg2.pool
@@ -29,13 +31,16 @@ class MySQLConnectionPool:
         return None
 
 class PostgreSQLConnectionPool:
-    """PostgreSQL连接池 - 支持10000+并发"""
+    """PostgreSQL 连接池。默认较小，避免 Docker 下 postgres 默认 max_connections=100 被瞬间占满。"""
+
     def __init__(self):
         try:
             config = DATABASE_CONFIG['postgresql']
+            min_conn = int(os.getenv("POSTGRES_POOL_MIN", "2"))
+            max_conn = int(os.getenv("POSTGRES_POOL_MAX", "32"))
             self.pool = psycopg2.pool.SimpleConnectionPool(
-                100,     # 最小连接数
-                1000,    # 最大连接数（支持10000并发的关键配置）
+                min_conn,
+                max_conn,
                 host=config['host'],
                 port=config['port'],
                 database=config['database'],
