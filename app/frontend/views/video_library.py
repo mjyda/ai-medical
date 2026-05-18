@@ -73,9 +73,8 @@ def _show_video_detail(video_id: str):
             except requests.RequestException as e:
                 st.error(f"无法连接 API：{e}")
     else:
-        # 超大文件回退到 nginx 代理 URL
-        file_url = f"/api/videos/{video_id}/file"
-        st.video(file_url)
+        # 超大文件回退到完整 URL（需浏览器可访问）
+        st.video(f"http://127.0.0.1:8001/videos/{video_id}/file")
 
     c1, c2, c3 = st.columns(3)
     c1.metric("大小", _fmt_size(file_size))

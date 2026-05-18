@@ -51,14 +51,27 @@ except requests.RequestException as e:
 
 st.subheader(video["original_filename"])
 
-# 播放器 — 通过 nginx /api/ 代理访问视频流（浏览器可直接访问）
-file_url = f"/api/videos/{video_id}/file"
-st.video(file_url)
+# 播放器 — Streamlit 服务端拉取视频字节（避免路径/URL歧义）
+file_size = video.get("file_size", 0)
+if file_size < 80 * 1024 * 1024:  # <80MB：直接加载字节播放
+    with st.spinner("正在加载视频..."):
+        try:
+            vr = requests.get(f"{BASE}/videos/{video_id}/file", timeout=120)
+            if vr.status_code == 200:
+                st.video(vr.content, format="video/mp4")
+            else:
+                st.error(f"加载视频失败: {vr.status_code}")
+        except requests.RequestException as e:
+            st.error(f"无法连接 API：{e}")
+else:
+    # 超大文件回退到完整 URL（需浏览器可访问）
+    st.video(f"http://127.0.0.1:8001/videos/{video_id}/file")
 
 c1, c2, c3 = st.columns(3)
-c1.metric("大小", _fmt_size(video.get("file_size", 0)))
-c2.metric("时长", f"{video.get('duration') or '--'} 秒" if video.get("duration") else "--")
-c3.markdown(f"[下载视频]({file_url})")
+c1.metric("大小", _fmt_size(file_size))
+dur = video.get("duration")
+c2.metric("时长", f"{int(dur // 60)}:{int(dur % 60):02d}" if dur else "--")
+c3.markdown(f"[下载视频](http://127.0.0.1:8001/videos/{video_id}/file)")
 
 st.divider()
 st.caption(f"文件 ID: {video_id}")
