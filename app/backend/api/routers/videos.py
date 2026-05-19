@@ -213,6 +213,24 @@ def video_list(limit: int = 100, repo: VideoRepository = RepoDep):
     return {"items": repo.list_recent(min(limit, 500))}
 
 
+@router.delete("/{video_id}")
+def video_delete(video_id: str, repo: VideoRepository = RepoDep):
+    row = repo.get_by_id(video_id)
+    if not row:
+        raise HTTPException(404, detail="视频不存在")
+    sp = row.get("storage_path")
+    if sp and Path(sp).is_file():
+        try:
+            Path(sp).unlink(missing_ok=True)
+        except Exception:
+            pass
+    try:
+        repo.delete(video_id)
+    except Exception as e:
+        raise HTTPException(500, detail=f"删除失败: {e}") from e
+    return {"ok": True, "video_id": video_id}
+
+
 @router.get("/{video_id}")
 def video_detail(video_id: str, repo: VideoRepository = RepoDep):
     row = repo.get_by_id(video_id)

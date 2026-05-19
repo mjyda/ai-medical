@@ -72,12 +72,3 @@ if prompt := st.chat_input("请输入问题…"):
         with st.expander("引用文档 / 来源", expanded=True):
             for s in sources:
                 st.markdown(f"- {s}")
-
-st.divider()
-with st.expander("产品咨询（占位）", expanded=False):
-    st.write("与线稿一致的可折叠表单区；提交不落库。")
-    with st.form("lead"):
-        n = st.text_input("姓名")
-        e = st.text_input("邮箱")
-        if st.form_submit_button("提交"):
-            st.success("已记录（Mock）")

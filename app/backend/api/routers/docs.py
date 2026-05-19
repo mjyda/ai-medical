@@ -171,6 +171,25 @@ def docs_list(repo: RepoDep, limit: int = 100):
     return {"items": repo.list_recent(min(limit, 500))}
 
 
+@router.delete("/{doc_id}")
+def docs_delete(doc_id: str, repo: RepoDep):
+    row = repo.get_by_id(doc_id)
+    if not row:
+        raise HTTPException(404, detail="文档不存在")
+    import os
+    sp = row.get("storage_path")
+    if sp and os.path.isfile(sp):
+        try:
+            os.remove(sp)
+        except Exception:
+            pass
+    try:
+        repo.delete(doc_id)
+    except Exception as e:
+        raise HTTPException(500, detail=f"删除失败: {e}") from e
+    return {"ok": True, "doc_id": doc_id}
+
+
 @router.get("/{doc_id}")
 def docs_detail(doc_id: str, repo: RepoDep):
     row = repo.get_by_id(doc_id)

@@ -158,6 +158,15 @@ class KBDocumentRepository:
             pg.commit()
         return True
 
+    def delete(self, doc_id: str) -> bool:
+        self.ensure_table()
+        with PostgreSQLConnection() as pg:
+            if not pg.cursor:
+                return False
+            pg.execute("DELETE FROM kb_documents WHERE id = %s::uuid", (doc_id,))
+            pg.commit()
+        return True
+
     def list_recent(self, limit: int = 100) -> list[dict[str, Any]]:
         self.ensure_table()
         with PostgreSQLConnection() as pg:
@@ -165,7 +174,7 @@ class KBDocumentRepository:
                 return []
             pg.execute(
                 """
-                SELECT id::text, filename, storage_path, status, chunk_count, created_at
+                SELECT id::text, filename, storage_path, status, chunk_count, error_message, created_at
                 FROM kb_documents ORDER BY created_at DESC LIMIT %s
                 """,
                 (limit,),
@@ -178,7 +187,8 @@ class KBDocumentRepository:
                 "storage_path": r[2],
                 "status": r[3],
                 "chunk_count": r[4],
-                "created_at": r[5],
+                "error_message": r[5],
+                "created_at": r[6],
             }
             for r in rows
         ]

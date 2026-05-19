@@ -15,6 +15,7 @@ def execute_parse(doc_id: str) -> dict:
         return {"ok": False, "error": "not_found"}
     path = row["storage_path"]
     try:
+        repo.update(doc_id, status="parsing", error_message_null=True)
         docs = load_documents_from_file(path, doc_id)
         if not docs:
             repo.update(

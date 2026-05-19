@@ -119,6 +119,15 @@ class VideoRepository:
             "updated_at": row[12],
         }
 
+    def delete(self, video_id: str) -> bool:
+        self.ensure_table()
+        with PostgreSQLConnection() as pg:
+            if not pg.cursor:
+                return False
+            pg.execute("DELETE FROM videos WHERE id = %s::uuid", (video_id,))
+            pg.commit()
+        return True
+
     def list_recent(self, limit: int = 100) -> list[dict[str, Any]]:
         self.ensure_table()
         with PostgreSQLConnection() as pg:
@@ -127,7 +136,7 @@ class VideoRepository:
             pg.execute(
                 """
                 SELECT id::text, filename, original_filename, storage_path, file_size,
-                       mime_type, duration, status, created_at
+                       mime_type, duration, status, error_message, created_at
                 FROM videos ORDER BY created_at DESC LIMIT %s
                 """,
                 (limit,),
@@ -143,7 +152,8 @@ class VideoRepository:
                 "mime_type": r[5],
                 "duration": r[6],
                 "status": r[7],
-                "created_at": r[8],
+                "error_message": r[8],
+                "created_at": r[9],
             }
             for r in rows
         ]
