@@ -1,4 +1,4 @@
-"""登录页（线稿风）：不依赖进程 cwd，可独立正常展示。"""
+"""登录页（线稿风）：对接真实 /auth/login API。"""
 from pathlib import Path
 import sys
 
@@ -22,9 +22,13 @@ if _repo is None:
     if str(_fe) not in sys.path:
         sys.path.insert(0, str(_fe))
 
+import requests
 import streamlit as st
 
 from ui_theme import inject_wireframe_css
+from app.config.config import KNOWLEDGE_BASE_CONFIG
+
+API_BASE = KNOWLEDGE_BASE_CONFIG["api_base_url"].rstrip("/")
 
 inject_wireframe_css()
 
@@ -57,7 +61,7 @@ with right:
         """
 <div style="background:#fff;border:1px solid #bdbdbd;border-radius:4px;padding:1.25rem 1.5rem;margin-bottom:1rem;">
   <h2 style="margin:0 0 0.25rem 0;color:#212121;font-size:1.25rem;">登录</h2>
-  <p style="margin:0;color:#616161;font-size:0.9rem;">模拟登录：任意用户名与密码即可进入。</p>
+  <p style="margin:0;color:#616161;font-size:0.9rem;">对接后端认证服务。</p>
 </div>
 """,
         unsafe_allow_html=True,
@@ -66,14 +70,33 @@ with right:
     with st.form("login_form", clear_on_submit=False):
         username = st.text_input("用户名", placeholder="请输入用户名")
         password = st.text_input("密码", type="password", placeholder="请输入密码")
-        remember = st.checkbox("记住我", value=True)
         submitted = st.form_submit_button("登录", type="primary", use_container_width=True)
 
     if submitted:
-        st.session_state.authenticated = True
-        st.session_state.user_display = (username or "").strip() or "访客"
-        st.session_state.remember_me = remember
-        st.rerun()
+        if not username or not password:
+            st.error("请输入用户名和密码")
+        else:
+            try:
+                r = requests.post(
+                    f"{API_BASE}/auth/login",
+                    json={"username": username, "password": password},
+                    timeout=10,
+                )
+                if r.status_code == 200:
+                    data = r.json()
+                    st.session_state.authenticated = True
+                    st.session_state.auth_token = data["token"]
+                    st.session_state.user_profile = data["user"]
+                    st.session_state.user_display = data["user"].get("display_name") or data["user"].get("username", "访客")
+                    st.rerun()
+                elif r.status_code == 401:
+                    st.error("用户名或密码错误")
+                else:
+                    st.error(f"登录失败：{r.json().get('detail', '未知错误')}")
+            except requests.exceptions.ConnectionError:
+                st.error("无法连接后端服务，请检查 API 是否已启动。")
+            except Exception as e:
+                st.error(f"登录异常：{e}")
 
     if st.button("跳过登录（仅本地开发）", use_container_width=True, help="直接进入工作台，便于调试其它页面"):
         st.session_state.authenticated = True

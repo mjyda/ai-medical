@@ -10,6 +10,7 @@ import {
   Settings,
   Sparkles,
   ListTodo,
+  User,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -21,7 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuthStore } from '@/stores/authStore'
 import { cn } from '@/lib/utils'
 
@@ -55,6 +56,9 @@ export function AppShell() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
+
+  const displayName = user?.display_name ?? user?.username ?? 'U'
+  const avatarSrc = user?.avatar_url ? `/api${user.avatar_url}` : undefined
 
   return (
     <div className="flex min-h-screen">
@@ -91,13 +95,19 @@ export function AppShell() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback>{user?.name?.slice(0, 1).toUpperCase() ?? 'U'}</AvatarFallback>
+                    <AvatarImage src={avatarSrc} />
+                    <AvatarFallback>{displayName.slice(0, 1).toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
+                <DropdownMenuLabel>{displayName}</DropdownMenuLabel>
                 <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">{user?.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/settings')}>
+                  <User className="h-4 w-4" />
+                  {t('nav.settings')}
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => {

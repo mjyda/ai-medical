@@ -19,10 +19,62 @@
     "logout": "退出",
     "username": "用户名",
     "password": "密码",
+    "email": "邮箱",
+    "confirmPassword": "确认密码",
+    "passwordMismatch": "两次密码不一致",
     "skipDev": "跳过登录（开发）"
   },
   "lang": {
     "zh": "中文",
     "en": "English"
+  },
+  "settings": {
+    "title": "个人中心",
+    "desc": "管理您的个人资料、账号安全和偏好设置",
+    "tabs": {
+      "profile": "个人资料",
+      "security": "账号安全",
+      "notifications": "通知设置",
+      "api": "API 设置"
+    },
+    "profile": {
+      "avatar": "头像",
+      "uploadAvatar": "上传头像",
+      "displayName": "显示名称",
+      "email": "邮箱（不可修改）",
+      "bio": "个人简介",
+      "bioPlaceholder": "介绍一下自己...",
+      "save": "保存修改",
+      "saving": "保存中...",
+      "savedSuccess": "个人资料已保存",
+      "savedError": "保存失败"
+    },
+    "security": {
+      "changePassword": "修改密码",
+      "oldPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmNewPassword": "确认新密码",
+      "passwordMismatch": "两次密码不一致",
+      "passwordChanged": "密码修改成功",
+      "passwordError": "密码修改失败",
+      "changeButton": "修改密码",
+      "changing": "修改中...",
+      "sessionInfo": "登录信息",
+      "sessionNote": "登录凭证在过期后将需要重新登录"
+    },
+    "notifications": {
+      "emailNotify": "邮件通知",
+      "emailNotifyDesc": "接收重要更新的邮件通知",
+      "inAppNotify": "站内通知",
+      "inAppNotifyDesc": "在应用内接收通知提醒",
+      "docProcessAlert": "文档处理提醒",
+      "docProcessAlertDesc": "文档解析和向量化完成时通知",
+      "videoAnalysisAlert": "视频分析提醒",
+      "videoAnalysisAlertDesc": "视频分析任务完成时通知"
+    },
+    "api": {
+      "comingSoon": "API 设置功能即将上线",
+      "comingSoonDesc": "您将可以在此管理 API 密钥和访问令牌"
+    }
   }
 }

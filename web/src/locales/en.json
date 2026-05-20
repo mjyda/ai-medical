@@ -19,10 +19,62 @@
     "logout": "Sign out",
     "username": "Username",
     "password": "Password",
+    "email": "Email",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Passwords do not match",
     "skipDev": "Skip sign-in (dev)"
   },
   "lang": {
     "zh": "中文",
     "en": "English"
+  },
+  "settings": {
+    "title": "Settings",
+    "desc": "Manage your profile, security, and preferences",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "notifications": "Notifications",
+      "api": "API Keys"
+    },
+    "profile": {
+      "avatar": "Avatar",
+      "uploadAvatar": "Upload avatar",
+      "displayName": "Display name",
+      "email": "Email (read-only)",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
+      "save": "Save changes",
+      "saving": "Saving...",
+      "savedSuccess": "Profile saved",
+      "savedError": "Failed to save"
+    },
+    "security": {
+      "changePassword": "Change password",
+      "oldPassword": "Current password",
+      "newPassword": "New password",
+      "confirmNewPassword": "Confirm new password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChanged": "Password changed successfully",
+      "passwordError": "Failed to change password",
+      "changeButton": "Change password",
+      "changing": "Changing...",
+      "sessionInfo": "Session info",
+      "sessionNote": "You will need to sign in again after your session expires"
+    },
+    "notifications": {
+      "emailNotify": "Email notifications",
+      "emailNotifyDesc": "Receive important updates via email",
+      "inAppNotify": "In-app notifications",
+      "inAppNotifyDesc": "Receive alert notifications within the app",
+      "docProcessAlert": "Document processing alerts",
+      "docProcessAlertDesc": "Notify when document parsing or vectorization completes",
+      "videoAnalysisAlert": "Video analysis alerts",
+      "videoAnalysisAlertDesc": "Notify when video analysis tasks complete"
+    },
+    "api": {
+      "comingSoon": "API settings coming soon",
+      "comingSoonDesc": "You will be able to manage API keys and access tokens here"
+    }
   }
 }

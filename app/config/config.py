@@ -89,6 +89,16 @@ VIDEO_CONFIG = {
     "download_cookies_file": os.getenv("VIDEO_DOWNLOAD_COOKIES_FILE", ""),
 }
 
+# 认证与用户配置
+AUTH_CONFIG = {
+    "jwt_secret": os.getenv("JWT_SECRET", "change-me-in-production"),
+    "jwt_algorithm": os.getenv("JWT_ALGORITHM", "HS256"),
+    "jwt_expire_minutes": int(os.getenv("JWT_EXPIRE_MINUTES", "120")),
+    "avatar_upload_dir": os.getenv("AVATAR_UPLOAD_DIR", "app/data/uploads/avatars"),
+    "avatar_max_bytes": int(os.getenv("AVATAR_MAX_BYTES", str(2 * 1024 * 1024))),
+    "allowed_avatar_extensions": [".jpg", ".jpeg", ".png", ".webp"],
+}
+
 # 系统配置
 SYSTEM_CONFIG = {
     "rag": {

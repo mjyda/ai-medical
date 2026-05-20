@@ -38,7 +38,12 @@ with st.sidebar:
         st.caption(f"用户：{u}")
         if st.button("退出登录", type="primary"):
             st.session_state.authenticated = False
-            for k in ("user_display", "messages", "session_id", "gen_result", "selected_doc", "selected_doc_id", "selected_video", "selected_video_id"):
+            for k in (
+                "user_display", "auth_token", "user_profile",
+                "messages", "session_id", "gen_result",
+                "selected_doc", "selected_doc_id",
+                "selected_video", "selected_video_id",
+            ):
                 st.session_state.pop(k, None)
             st.rerun()
 

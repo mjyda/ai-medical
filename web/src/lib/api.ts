@@ -13,3 +13,18 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
+
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      try {
+        localStorage.removeItem('auth_token')
+      } catch {
+        /* ignore */
+      }
+      window.location.href = '/login'
+    }
+    return Promise.reject(err)
+  },
+)
